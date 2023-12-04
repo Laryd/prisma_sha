@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   // ... you will write your Prisma Client queries here
-  const users = await prisma.user.findMany({
+  const users = await prisma.user.deleteMany({
     where:{
       email:{endsWith: "gmail.com"}
     }
