@@ -9,3 +9,49 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+model User {
+  id String @id @default(uuid())
+  age Int
+  name String
+  email String @unique
+  role Role @default(BASIC)
+  writtenPosts Post[] @relation("WrittenPosts")
+  favoritePosts Post[] @relation("favoritePosts")
+  userPreference UserPreference? @relation(fields: [userPreferenceId], references: [id])
+  userPreferenceId String? @unique
+  @@unique([age, name]) //block level attribute
+  @@index([email])
+}
+
+model UserPreference {
+  id String @id @default(uuid())
+  emailUpdates Boolean
+  user User?
+
+}
+
+model Post { 
+  id String @id @default(uuid())
+  averageRating Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author User @relation("WrittenPosts", fields: [authorId], references:[id])
+  authorId String
+  favoriteBy User @relation("favoritePosts", fields: [favoriteById], references:[id])
+  favoriteById String
+  categories Category[]
+}
+
+model Category {
+  id String @id @default(uuid())
+  name String @unique
+  posts Post[]
+}
+
+
+enum Role {  //enum in typescript assigns values 0, 1, 2, 3 repectively
+  BASIC
+  ADMIN
+}
